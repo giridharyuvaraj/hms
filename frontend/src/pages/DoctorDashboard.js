@@ -14,6 +14,8 @@ const DoctorDashboard = () => {
     const [appointments, setAppointments] = useState([]);
     const [toast, setToast] = useState({ text: '', type: '' });
     const [filter, setFilter] = useState('ALL');
+    const [showSlotModal, setShowSlotModal] = useState(false);
+    const [slotForm, setSlotForm] = useState({ date: '', startTime: '', endTime: '', capacity: 10 });
 
     useEffect(() => {
         if (user?.id) fetchSchedule();
@@ -48,6 +50,18 @@ const DoctorDashboard = () => {
             fetchSchedule();
         } catch {
             showToast('Failed to complete appointment.', 'error');
+        }
+    };
+
+    const handleAddSlot = async (e) => {
+        e.preventDefault();
+        try {
+            await doctorService.addSlot(user.id, { ...slotForm, bookedCount: 0 });
+            showToast('Slot added successfully!');
+            setShowSlotModal(false);
+            setSlotForm({ date: '', startTime: '', endTime: '', capacity: 10 });
+        } catch {
+            showToast('Failed to add slot.', 'error');
         }
     };
 
@@ -179,6 +193,53 @@ const DoctorDashboard = () => {
             boxShadow: '0 3px 12px rgba(16,185,129,0.35)',
             transition: 'opacity 0.2s',
         },
+        btnAddSlot: {
+            padding: '10px 20px', borderRadius: 12, border: 'none',
+            background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+            color: '#fff', cursor: 'pointer', fontWeight: 700,
+            fontSize: 14, display: 'flex', alignItems: 'center', gap: 6,
+            boxShadow: '0 4px 16px rgba(99,102,241,0.35)',
+        },
+        overlay: {
+            position: 'fixed', inset: 0,
+            background: 'rgba(0,0,0,0.75)',
+            backdropFilter: 'blur(6px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 1000,
+        },
+        modalBox: {
+            background: '#1e293b',
+            border: '1px solid #334155',
+            borderRadius: 20,
+            padding: '32px',
+            minWidth: 340,
+            maxWidth: 420,
+            width: '90%',
+            boxShadow: '0 24px 80px rgba(0,0,0,0.6)',
+        },
+        modalTitle: {
+            fontSize: 20, fontWeight: 700, marginBottom: 20, color: '#f1f5f9',
+        },
+        formGroup: { display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 16 },
+        formLabel: { fontSize: 12, fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase' },
+        formInput: {
+            padding: '10px 14px', borderRadius: 10,
+            border: '1px solid #334155',
+            background: '#0f172a',
+            color: '#e2e8f0', fontSize: 14,
+            outline: 'none',
+        },
+        modalActions: { display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 12 },
+        btnCancel: {
+            padding: '10px 20px', borderRadius: 10, border: '1px solid #334155',
+            background: 'transparent', color: '#94a3b8', cursor: 'pointer',
+            fontWeight: 600, fontSize: 14,
+        },
+        btnSave: {
+            padding: '10px 24px', borderRadius: 10, border: 'none',
+            background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+            color: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: 14,
+        },
     };
 
     return (
@@ -190,12 +251,48 @@ const DoctorDashboard = () => {
 
             {toast.text && <div style={s.toast(toast.type)}>{toast.text}</div>}
 
+            {/* Add Slot Modal */}
+            {showSlotModal && (
+                <div style={s.overlay} onClick={() => setShowSlotModal(false)}>
+                    <div style={s.modalBox} onClick={e => e.stopPropagation()}>
+                        <div style={s.modalTitle}>📅 Add Available Slot</div>
+                        <form onSubmit={handleAddSlot}>
+                            <div style={s.formGroup}>
+                                <label style={s.formLabel}>Date</label>
+                                <input style={s.formInput} type="date" required value={slotForm.date} onChange={e => setSlotForm({...slotForm, date: e.target.value})} />
+                            </div>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                                <div style={s.formGroup}>
+                                    <label style={s.formLabel}>Start</label>
+                                    <input style={s.formInput} type="time" required value={slotForm.startTime} onChange={e => setSlotForm({...slotForm, startTime: e.target.value})} />
+                                </div>
+                                <div style={s.formGroup}>
+                                    <label style={s.formLabel}>End</label>
+                                    <input style={s.formInput} type="time" required value={slotForm.endTime} onChange={e => setSlotForm({...slotForm, endTime: e.target.value})} />
+                                </div>
+                            </div>
+                            <div style={s.formGroup}>
+                                <label style={s.formLabel}>Capacity (Members)</label>
+                                <input style={s.formInput} type="number" required value={slotForm.capacity} onChange={e => setSlotForm({...slotForm, capacity: parseInt(e.target.value)})} />
+                            </div>
+                            <div style={s.modalActions}>
+                                <button type="button" style={s.btnCancel} onClick={() => setShowSlotModal(false)}>Cancel</button>
+                                <button type="submit" style={s.btnSave}>Add Slot</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
             {/* Header */}
             <div style={s.header}>
                 <div>
                     <h1 style={s.title}>My Schedule</h1>
                     <p style={s.subtitle}>Welcome back, {user?.name} 👋 &nbsp;·&nbsp; {appointments.length} total appointments</p>
                 </div>
+                <button style={s.btnAddSlot} onClick={() => setShowSlotModal(true)}>
+                    📅 Add Slot
+                </button>
             </div>
 
             {/* Stats */}

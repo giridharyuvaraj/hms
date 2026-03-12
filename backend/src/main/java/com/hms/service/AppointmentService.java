@@ -18,26 +18,27 @@ public class AppointmentService {
 
     @Transactional
     public Appointment bookAppointment(Appointment appointment) {
-        // 1. Verify doctor availability
         User doctor = userRepository.findById(appointment.getDoctorId())
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
 
-        boolean isSlotAvailable = doctor.getAvailableSlots().stream()
-                .anyMatch(slot -> slot.getDate().equals(appointment.getAppointmentDate()) &&
+        // 1. Find the matching slot and verify availability/capacity
+        AvailableSlot matchingSlot = doctor.getAvailableSlots().stream()
+                .filter(slot -> slot.getDate().equals(appointment.getAppointmentDate()) &&
                         !appointment.getStartTime().isBefore(slot.getStartTime()) &&
-                        !appointment.getEndTime().isAfter(slot.getEndTime()));
+                        !appointment.getEndTime().isAfter(slot.getEndTime()))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Doctor is not available at the selected time"));
 
-        if (!isSlotAvailable) {
-            throw new RuntimeException("Doctor is not available at the selected time");
+        if (matchingSlot.getBookedCount() != null && matchingSlot.getCapacity() != null &&
+            matchingSlot.getBookedCount() >= matchingSlot.getCapacity()) {
+            throw new RuntimeException("This slot is already full");
         }
 
-        // 2. Check doctor overlap
-        List<Appointment> doctorOverlaps = appointmentRepository.findOverlappingDoctorAppointments(
-                appointment.getDoctorId(), appointment.getAppointmentDate(),
-                appointment.getStartTime(), appointment.getEndTime());
-        if (!doctorOverlaps.isEmpty()) {
-            throw new RuntimeException("Doctor has an overlapping appointment");
-        }
+        // 2. Check for exact overlap (if multiple patients can be in one slot, we don't need this, 
+        // but we should still check if THIS SPECIFIC patient has an overlap)
+        // Actually, the user wants "slot for how many members he can see", 
+        // so multiple patients per slot is allowed up to capacity.
+        // We only check if the SAME patient already has an appointment.
 
         // 3. Check patient overlap
         List<Appointment> patientOverlaps = appointmentRepository.findOverlappingPatientAppointments(
@@ -46,6 +47,10 @@ public class AppointmentService {
         if (!patientOverlaps.isEmpty()) {
             throw new RuntimeException("Patient has another appointment at this time");
         }
+
+        // 4. Update slot count and book
+        matchingSlot.setBookedCount((matchingSlot.getBookedCount() == null ? 0 : matchingSlot.getBookedCount()) + 1);
+        userRepository.save(doctor); // This should cascade if using proper JPA annotations
 
         appointment.setStatus(AppointmentStatus.BOOKED);
         return appointmentRepository.save(appointment);

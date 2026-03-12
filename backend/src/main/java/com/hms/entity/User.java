@@ -14,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,14 +24,15 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    private String specialization; // For DOCTOR
-    private String department;     // For DOCTOR/ADMIN
-    private Double fee;            // For DOCTOR
-    private String experience;     // For DOCTOR (e.g., "10 years")
-    private String email;          // For login
-    private String password;       // For login (plain text for demo)
+    private String specialization; 
+    private String department;
+    private Double fee;
+    private String experience;
 
-    @ElementCollection
-    @CollectionTable(name = "doctor_slots", joinColumns = @JoinColumn(name = "doctor_id"))
+    private String email;
+    private String password;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "doctor_id")
     private List<AvailableSlot> availableSlots = new ArrayList<>();
 }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { doctorService, appointmentService } from '../services/api.js';
 import { useAuth } from '../context/AuthContext.js';
+import '../styles/patient.css';
 
 const specialtyColors = {
     'Cardiology': { bg: '#fef3c7', color: '#d97706', icon: '❤️' },
@@ -145,18 +146,27 @@ const PatientDashboard = () => {
                                     {doc.availableSlots?.length === 0 ? (
                                         <p className="text-muted small">No slots available currently.</p>
                                     ) : (
-                                        doc.availableSlots.map((slot, i) => (
-                                            <button
-                                                key={i}
-                                                className={`slot-btn ${bookingSlot === slot && selectedDoctor?.id === doc.id ? 'selected-slot' : ''}`}
-                                                onClick={() => {
-                                                    setSelectedDoctor(doc);
-                                                    setBookingSlot(slot);
-                                                }}
-                                            >
-                                                📅 {slot.date} &nbsp;•&nbsp; 🕐 {slot.startTime} – {slot.endTime}
-                                            </button>
-                                        ))
+                                        doc.availableSlots.map((slot, i) => {
+                                            const isFull = slot.bookedCount >= (slot.capacity || 10);
+                                            return (
+                                                <button
+                                                    key={i}
+                                                    disabled={isFull}
+                                                    className={`slot-btn ${bookingSlot === slot && selectedDoctor?.id === doc.id ? 'selected-slot' : ''} ${isFull ? 'slot-full' : ''}`}
+                                                    onClick={() => {
+                                                        setSelectedDoctor(doc);
+                                                        setBookingSlot(slot);
+                                                    }}
+                                                >
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+                                                        <span>📅 {slot.date} &nbsp;•&nbsp; 🕐 {slot.startTime} – {slot.endTime}</span>
+                                                        <span style={{ fontSize: '0.8rem', padding: '2px 6px', borderRadius: 6, background: isFull ? '#ef444422' : '#10b98122', color: isFull ? '#ef4444' : '#10b981', fontWeight: 600 }}>
+                                                            {isFull ? 'FULL' : `${slot.bookedCount}/${slot.capacity || 10} Booked`}
+                                                        </span>
+                                                    </div>
+                                                </button>
+                                            );
+                                        })
                                     )}
                                     {selectedDoctor?.id === doc.id && bookingSlot && (
                                         <button className="btn-confirm-booking" onClick={handleBook}>

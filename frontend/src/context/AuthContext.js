@@ -8,7 +8,8 @@ export const AuthProvider = ({ children }) => {
         return stored ? JSON.parse(stored) : null;
     });
 
-    const login = (userData) => {
+    const login = (authData) => {
+        const userData = { ...authData.user, token: authData.token };
         setUser(userData);
         localStorage.setItem('hms_user', JSON.stringify(userData));
     };

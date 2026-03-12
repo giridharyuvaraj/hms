@@ -113,6 +113,27 @@ const AdminDashboard = () => {
     const totalAppointments = Object.values(appointmentsReport).reduce((a, b) => a + b, 0);
     const maxAppointments = Math.max(...Object.values(appointmentsReport), 1);
 
+    const [showSlotModal, setShowSlotModal] = useState(false);
+    const [selectedDoctorForSlot, setSelectedDoctorForSlot] = useState(null);
+    const [slotFormValues, setSlotFormValues] = useState({ date: '', startTime: '', endTime: '', capacity: 10 });
+
+    const openSlotModal = (doc) => {
+        setSelectedDoctorForSlot(doc);
+        setShowSlotModal(true);
+    };
+
+    const handleAddSlot = async (e) => {
+        e.preventDefault();
+        try {
+            await doctorService.addSlot(selectedDoctorForSlot.id, { ...slotFormValues, bookedCount: 0 });
+            showToast('Slot added for doctor successfully!');
+            setShowSlotModal(false);
+            setSlotFormValues({ date: '', startTime: '', endTime: '', capacity: 10 });
+        } catch {
+            showToast('Failed to add slot.', 'error');
+        }
+    };
+
     const styles = {
         root: {
             minHeight: '100vh',
@@ -387,6 +408,39 @@ const AdminDashboard = () => {
                 </div>
             )}
 
+            {/* Add Slot Modal */}
+            {showSlotModal && (
+                <div style={styles.overlay} onClick={() => setShowSlotModal(false)}>
+                    <div style={{ ...styles.modalBox, maxWidth: 420 }} onClick={e => e.stopPropagation()}>
+                        <div style={styles.modalTitle}>📅 Add Slot for {selectedDoctorForSlot?.name}</div>
+                        <form onSubmit={handleAddSlot}>
+                            <div style={styles.formGroup}>
+                                <label style={styles.formLabel}>Date</label>
+                                <input style={styles.formInput} type="date" required value={slotFormValues.date} onChange={e => setSlotFormValues({...slotFormValues, date: e.target.value})} />
+                            </div>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                                <div style={styles.formGroup}>
+                                    <label style={styles.formLabel}>Start</label>
+                                    <input style={styles.formInput} type="time" required value={slotFormValues.startTime} onChange={e => setSlotFormValues({...slotFormValues, startTime: e.target.value})} />
+                                </div>
+                                <div style={styles.formGroup}>
+                                    <label style={styles.formLabel}>End</label>
+                                    <input style={styles.formInput} type="time" required value={slotFormValues.endTime} onChange={e => setSlotFormValues({...slotFormValues, endTime: e.target.value})} />
+                                </div>
+                            </div>
+                            <div style={styles.formGroup}>
+                                <label style={styles.formLabel}>Capacity</label>
+                                <input style={styles.formInput} type="number" required value={slotFormValues.capacity} onChange={e => setSlotFormValues({...slotFormValues, capacity: parseInt(e.target.value)})} />
+                            </div>
+                            <div style={styles.modalActions}>
+                                <button type="button" style={styles.btnCancel} onClick={() => setShowSlotModal(false)}>Cancel</button>
+                                <button type="submit" style={styles.btnSave}>Add Slot</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
             {/* Header */}
             <div style={styles.header}>
                 <div>
@@ -496,6 +550,7 @@ const AdminDashboard = () => {
                                             <td style={styles.td}>
                                                 <div style={{ display: 'flex', gap: 8 }}>
                                                     <button style={styles.btnEdit} onClick={() => openEditModal(doc)}>✏️ Edit</button>
+                                                    <button style={styles.btnEdit} onClick={() => openSlotModal(doc)}>📅 +Slot</button>
                                                     <button style={styles.btnDelRow} onClick={() => setDeleteConfirm(doc)}>🗑️ Delete</button>
                                                 </div>
                                             </td>
