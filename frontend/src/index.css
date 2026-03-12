@@ -1,0 +1,431 @@
+:root {
+  --primary: #4f46e5;
+  --primary-glow: rgba(79, 70, 229, 0.25);
+  --secondary: #ec4899;
+  --accent: #10b981;
+
+  --bg: #f8fafc;
+  --bg-soft: #ffffff;
+  --card-bg: #ffffff;
+
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+
+  --border: #e2e8f0;
+
+  --success: #10b981;
+  --error: #ef4444;
+  --pending: #f59e0b;
+
+  --radius: 16px;
+  --shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text-main);
+  min-height: 100vh;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Typography */
+
+h1, h2, h3 {
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #818cf8, #4f46e5, #ec4899);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar {
+  background: white;
+  border-bottom: 1px solid var(--border);
+  padding: 0.8rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.logo-icon {
+  font-size: 1.8rem;
+}
+
+.nav-center {
+  display: flex;
+  gap: 2.5rem;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.25s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--primary);
+}
+
+/* Right Navbar (Login + Signup) */
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Login Link */
+
+.nav-login {
+  text-decoration: none;
+  color: var(--text-main);
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.nav-login:hover {
+  color: var(--primary);
+}
+
+/* Signup Button */
+
+.btn-hero-primary {
+  background: var(--primary);
+  color: white;
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-hero-primary:hover {
+  box-shadow: 0 6px 14px var(--primary-glow);
+}
+
+/* =========================
+   CARDS
+========================= */
+
+.portal-card,
+.doctor-card,
+.stat-card,
+.admin-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  border-radius: var(--radius);
+}
+
+/* Portal Cards */
+
+.portals-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 2rem;
+}
+
+.portal-card {
+  padding: 3rem;
+  text-align: center;
+  transition: 0.3s;
+  text-decoration: none;
+}
+
+.portal-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--primary);
+}
+
+.portal-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+}
+
+.portal-card h3 {
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+}
+
+.portal-card p {
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+}
+
+.btn-portal {
+  background: var(--primary);
+  color: white;
+  padding: 0.7rem 1.4rem;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.hero-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.hero-title {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-hero-secondary {
+  background: white;
+  border: 1px solid var(--border);
+  padding: 0.9rem 2rem;
+  border-radius: var(--radius);
+}
+
+/* =========================
+   DASHBOARD
+========================= */
+
+.admin-dashboard,
+.doctor-dashboard,
+.patient-dashboard {
+  padding: 2rem 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.dashboard-header {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1rem;
+}
+
+.dashboard-header h1 {
+  font-size: 2.5rem;
+}
+
+/* Stats */
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+  gap: 1.5rem;
+}
+
+.stat-card {
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.stat-card-icon {
+  width: 55px;
+  height: 55px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: #eef2ff;
+}
+
+.stat-card-value {
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+/* Tables */
+
+.doctors-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.doctors-table th {
+  text-align: left;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+.doctors-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Buttons */
+
+.btn-add-doctor {
+  background: var(--accent);
+  color: white;
+  padding: 0.7rem 1.4rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-edit,
+.btn-delete {
+  padding: 0.4rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: white;
+}
+
+.btn-delete:hover {
+  background: var(--error);
+  color: white;
+}
+
+/* Forms */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group input {
+  background: white;
+  border: 1px solid var(--border);
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79,70,229,0.15);
+}
+
+/* Search */
+
+.search-bar-form {
+  display: flex;
+  gap: 1rem;
+  background: white;
+  border: 1px solid var(--border);
+  padding: 1rem;
+  border-radius: var(--radius);
+}
+
+.search-input {
+  border: none;
+  width: 100%;
+  font-size: 1rem;
+}
+
+.search-input:focus {
+  outline: none;
+}
+
+/* Modal */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: grid;
+  place-items: center;
+}
+
+.modal-box {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: var(--shadow);
+}
+
+/* Responsive */
+
+@media (max-width: 1024px) {
+
+.hero-section {
+grid-template-columns: 1fr;
+text-align:center;
+}
+
+.portals-grid {
+grid-template-columns:1fr;
+}
+
+.admin-dashboard,
+.doctor-dashboard,
+.patient-dashboard {
+padding:1rem;
+}
+
+}
+
+/* Animation */
+
+@keyframes fadeIn {
+
+from {
+opacity:0;
+transform:translateY(20px);
+}
+
+to {
+opacity:1;
+transform:translateY(0);
+}
+
+}
+
+.portal-card,
+.stat-card {
+animation:fadeIn 0.6s ease-out;
+}
